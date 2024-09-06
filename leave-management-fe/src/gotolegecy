@@ -1,0 +1,198 @@
+/*
+
+leave request page legacy
+
+calismama veya baska bir hata durumunda ayni kodun bir onceki versiyonunu buraya ekledim. Bir degisiklik yaptigimda calismazsa buradakileri kullanacagim
+
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+const LeaveRequestPage = ({ employee }) => {
+    const [leaveRequests, setLeaveRequests] = useState([]);
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
+    const [reason, setReason] = useState('');  // Add this state
+
+    useEffect(() => {
+        const fetchLeaveRequests = async () => {
+            const response = await axios.get(`http://localhost:8080/leaverequests/employee/${employee.email}`);
+            setLeaveRequests(response.data);
+        };
+        fetchLeaveRequests();
+    }, [employee]);
+
+    const handleLeaveRequest = async () => {
+        const response = await axios.post('http://localhost:8080/leaverequests', {
+            startDate,
+            endDate,
+            reason,  // Include reason in the request
+            status: 'PENDING',
+            employee
+        });
+        setLeaveRequests([...leaveRequests, response.data]);
+    };
+
+    return (
+        <div>
+            <h2>Leave Requests for {employee.name}</h2>
+            <ul>
+                {leaveRequests.map(lr => (
+                    <li key={lr.id}>
+                        {lr.startDate} to {lr.endDate} - {lr.status} - {lr.reason}
+                    </li>
+                ))}
+            </ul>
+            <div>
+                <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} />
+                <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} />
+                <textarea
+                    value={reason}
+                    onChange={e => setReason(e.target.value)}
+                    placeholder="Reason for leave"
+                />
+                <button onClick={handleLeaveRequest}>Request Leave</button>
+            </div>
+        </div>
+    );
+};
+
+export default LeaveRequestPage;
+
+
+
+
+employee profile page legacy
+
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import styles from './EmployeeProfilePage.module.css';
+
+const EmployeeProfilePage = () => {
+    const [leaveRequests, setLeaveRequests] = useState([]);
+
+    useEffect(() => {
+        const fetchLeaveRequests = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/my-leaverequests');
+                setLeaveRequests(response.data);
+            } catch (error) {
+                console.error('Error fetching leave requests:', error);
+            }
+        };
+        fetchLeaveRequests();
+    }, []);
+
+    return (
+        <div className={styles.container}>
+            <h2 className={styles.title}>My Leave Requests</h2>
+            <ul className={styles.leaveList}>
+                {leaveRequests.map(lr => (
+                    <li key={lr.id} className={styles.leaveItem}>
+                        <div className={styles.leaveDetails}>
+                            <span>{lr.startDate} to {lr.endDate}</span>
+                            <span>Status: {lr.status}</span>
+                            <p>Reason: {lr.reason || 'No reason provided'}</p>
+                        </div>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+};
+
+export default EmployeeProfilePage;
+
+
+
+app js legacy
+
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import LoginPage from './LoginPage';
+import LeaveRequestPage from './LeaveRequestPage';
+import AllLeaveRequestsPage from './AllLeaveRequestsPage';
+import EmployeeProfilePage from  './EmployeeProfilePage';
+const App = () => {
+    const [employee, setEmployee] = useState(null);
+
+    return (
+        <Router>
+            <Routes>
+                <Route path="/login" element={<LoginPage setEmployee={setEmployee} />} />
+                <Route
+                    path="/leave-requests"
+                    element={
+                        employee ? (
+                            <LeaveRequestPage employee={employee} />
+                        ) : (
+                            <Navigate to="/login" />
+                        )
+                    }
+                />
+                <Route path="/all-leave-requests" element={<AllLeaveRequestsPage />} />
+                <Route path="*" element={<Navigate to="/login" />} />
+                <Route path="/employee-profile" component={<EmployeeProfilePage/>} />
+                
+            </Routes>
+        </Router>
+    );
+};
+
+export default App;
+
+
+
+login page legacy
+
+
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import styles from './LoginPage.module.css';
+
+const LoginPage = ({ setEmployee }) => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const navigate = useNavigate();
+
+    const handleLogin = async () => {
+        try {
+            const response = await axios.post('http://localhost:8080/employees/login', { email, password });
+            setEmployee(response.data);
+            navigate('/leave-requests');
+        } catch (error) {
+            setError('Login failed. Please check your credentials.');
+        }
+    };
+
+    return (
+        <div className={styles.container}>
+            <div className={styles.formContainer}>
+                <h1 className={styles.title}>Login</h1>
+                <input
+                    type="email"
+                    className={styles.input}
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    placeholder="Email"
+                />
+                <input
+                    type="password"
+                    className={styles.input}
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    placeholder="Password"
+                />
+                <button className={styles.button} onClick={handleLogin}>Login</button>
+                {error && <p className={styles.error}>{error}</p>}
+            </div>
+        </div>
+    );
+};
+
+export default LoginPage;
+
+
+
+*/
